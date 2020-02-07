@@ -1,55 +1,51 @@
 import "./App.css";
-import React, { useState, Component } from "react";
-import DateInput from "./Components/DateInput";
-import Photo from "./Components/Photo.js";
+import React, { useState, useEffect } from "react";
+import Loader from './components/Loader/Loader';
+import PhotoOfTheDay from './components/PhotoOfTheDay/PhotoOfTheDay';
+import axios from 'axios';
 
-class App extends Component {
+function App() {
+  const [date, setDate] = useState();
+  const [title, setTitle] = useState();
+  const [url, setUrl] = useState();
+  const [explanation, setExplanation] = useState();
+  const [copyright, setCopyright] = useState();
 
-  //will be used to fetch and update the photo, and will need to be passed to the Photo component to render.
-  state = {
-    date: "",
-    photo: ""
-  };
+  const apiKey = 'CyqCxRyaRcKUgKJHGf8LWvzM1WaQCSEa7q28I73T';
+  useEffect(() => {
+    axios
+      .get(
+        `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=2012-03-14`
+      )
+      .then(response => {
+        setDate(response.data.date);
+        setTitle(response.data.title);
+        setUrl(response.data.url);
+        setExplanation(response.data.explanation);
+        setCopyright(response.data.copyright);
+      })
+      .catch(error => console.log(error));
+  }, []);
+  // console.log(title);
+  if (!url) return <Loader />;
 
-//Fetching the APOD. If there is no date entered into the form, then it will return and show today's image
-  componentDidMount() {
-    fetch(`https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY`)
-      .then(response => response.json())
-      .then(json => this.setState({ photo: json }));
-  }
+return(
 
-  //Displaying The Photo
-  getPhoto = date => {
-    fetch(`https://api.nasa.gov/planetary/apod?date=${date}&api_key=DEMO_KEY`)
-      .then(response => response.json())
-      .then(photoData => this.setState({ photo: photoData }));
-  };
+  <div className='App'>
+    <p>
+    {/* <Loader /> */}
+        <PhotoOfTheDay
+          date={date}
+          title={title}
+          url={url}
+          explanation={explanation}
+          copyright={copyright}
+        />
+    </p>
+  </div>
 
-//update the state, and pass function down as a prop to DateInput. function will be called when the form is submitted, and update the state using the value entered into the form.
+)
 
-changeDate = e => {
-  e.preventDefault();
-  let dateFromInput = e.target[0].value;
-  this.setState({ date: dateFromInput });
-  this.getPhoto(dateFromInput);
-  console.log(e.target);
-};
-
-handleClick = () => {
-  console.log("clicked");
-};
-
-render() {
-  return (
-    <div>
-      <h1>NASA's Astronomy Picture of the Day</h1>
-      <DateInput
-       changeDate={this.changeDate}
-       date={this.state.date} />
-      <Photo photo={this.state.photo} />
-    </div>
-  );
-}
 }
 
 export default App;
