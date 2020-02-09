@@ -1,7 +1,8 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
-import Loader from './components/Loader/Loader';
-import PhotoOfTheDay from './components/PhotoOfTheDay/PhotoOfTheDay';
+import Loader from './Components/Loader/Loader';
+// import DateInput from "./Components/DateInput";
+import PhotoOfTheDay from './Components/PhotoOfTheDay/PhotoOfTheDay.js';
 import axios from 'axios';
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
   useEffect(() => {
     axios
       .get(
-        `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=2012-03-14`
+        `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`
       )
       .then(response => {
         setDate(response.data.date);
